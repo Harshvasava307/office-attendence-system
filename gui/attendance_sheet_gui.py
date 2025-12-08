@@ -6,6 +6,7 @@ class AttendanceSheetGUI:
     def __init__(self, parent):
         self.core = AttendanceCore()
 
+
         self.window = tk.Toplevel(parent)
         self.window.title("Attendance Sheet")
 

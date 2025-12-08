@@ -5,9 +5,13 @@ from gui.admin_panel import AdminPanel
 
 class AdminLoginWindow:
     def __init__(self, parent):
+        self.window = tk.Toplevel(parent)
+
         self.admin_core = AdminCore()
 
-        self.window = tk.Toplevel(parent)
+        self.window.geometry("300x300")
+        self.window.resizable(False, False)
+
         self.window.title("Admin Login")
 
         tk.Label(self.window, text="Username").pack()

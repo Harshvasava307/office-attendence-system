@@ -4,6 +4,8 @@ from core.employee_core import EmployeeCore
 class RemoveEmployeeGUI:
     def __init__(self, parent):
         self.employee_core = EmployeeCore()
+        self.window.geometry("300x300")
+        self.window.resizable(False, False)
 
         self.window = tk.Toplevel(parent)
         self.window.title("Remove Employee")

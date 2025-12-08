@@ -8,6 +8,9 @@ class AdminPanel:
         self.window = tk.Toplevel(parent)
         self.window.title("Admin Panel")
 
+        self.window.geometry("300x300")
+        self.window.resizable(False, False)
+
         tk.Button(self.window, text="Attendance Sheet", width=25,
                   command=self.open_sheet).pack(pady=10)
 
