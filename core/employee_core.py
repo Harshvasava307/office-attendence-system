@@ -1,24 +1,38 @@
 import cv2
 import os
-from config.config import EMPLOYEE_IMAGES_DIR
-from core.face_recognition_core import FaceRecognitionCore
+
+EMPLOYEE_IMAGES_DIR = "storage/employees/images"
+
+# Ensure directory exists
+os.makedirs(EMPLOYEE_IMAGES_DIR, exist_ok=True)
+
+# Haarcascade for face detection
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 class EmployeeCore:
     def __init__(self):
-        self.face_core = FaceRecognitionCore()
+        pass
 
-    def add_employee(self, name, image):
-        img_path = os.path.join(EMPLOYEE_IMAGES_DIR, f"{name}.jpg")
-        cv2.imwrite(img_path, image)
+    def add_employee(self, name, frame):
+        """
+        Detect face in frame, crop, resize, and save
+        """
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
 
-        encoding = self.face_core.encode_face(image)
-        self.face_core.save_encoding(name, encoding)
+        if len(faces) == 0:
+            print("No face detected! Cannot add employee.")
+            return False
 
-    def remove_employee(self, name):
-        img_path = os.path.join(EMPLOYEE_IMAGES_DIR, f"{name}.jpg")
-        enc_path = os.path.join(EMPLOYEE_IMAGES_DIR.replace("images", "encodings"), f"{name}.npy")
+        # Take the first detected face
+        x, y, w, h = faces[0]
+        face_roi = gray[y:y+h, x:x+w]
+        face_resized = cv2.resize(face_roi, (200, 200))
 
-        if os.path.exists(img_path):
-            os.remove(img_path)
-        if os.path.exists(enc_path):
-            os.remove(enc_path)
+        # Save image
+        filename = f"{name}.png"
+        path = os.path.join(EMPLOYEE_IMAGES_DIR, filename)
+        cv2.imwrite(path, face_resized)
+
+        print(f"Saved employee face for {name} at {path}")
+        return True

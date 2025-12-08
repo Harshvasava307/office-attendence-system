@@ -1,6 +1,7 @@
 import tkinter as tk
 from gui.login_window import AdminLoginWindow
 from gui.admin_panel import AdminPanel
+from gui.employee_attendance_window import EmployeeAttendanceWindow
 
 class MainWindow:
     def __init__(self):
@@ -15,7 +16,7 @@ class MainWindow:
         tk.Button(self.root, text="Admin", width=20, command=self.open_admin).pack(pady=10)
 
     def login(self):
-        print("Login pressed")
+        EmployeeAttendanceWindow(self.root)
 
     def logout(self):
         print("Logout pressed")
