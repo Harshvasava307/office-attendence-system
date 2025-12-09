@@ -14,7 +14,7 @@ class EmployeeAttendanceWindow(tk.Frame):
         if not inline:
             self.window = tk.Toplevel(parent)
             self.window.title("Employee Attendance")
-            self.window.geometry("660x560")
+            self.window.geometry("640x480")
             self.window.resizable(False, False)
             self.container = self.window
         else:

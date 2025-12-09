@@ -14,7 +14,7 @@ class AddEmployeeGUI(tk.Frame):
             # For backward compatibility, create a Toplevel window
             self.window = tk.Toplevel(parent)
             self.window.title("Add Employee")
-            self.window.geometry("1280x720")
+            self.window.geometry("640x480")
             self.window.resizable(False, False)
             self.container = self.window
         else:

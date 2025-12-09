@@ -8,7 +8,7 @@ class MainWindow:
     def __init__(self, root):
         self.root = root
         self.root.title("Office Attendance System")
-        self.root.geometry("1280x720")
+        self.root.geometry("1400x900")
         self.root.resizable(False, False)
         self.root.configure(bg="#1E1E2F")  # modern dark background
 
