@@ -1,5 +1,5 @@
 import tkinter as tk
-from gui.add_employee_gui import AddEmployeeGUI
+from gui.add_employee_window import AddEmployeeGUI
 from gui.remove_employee_gui import RemoveEmployeeGUI
 from gui.attendance_sheet_gui import AttendanceSheetGUI
 

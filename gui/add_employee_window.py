@@ -25,7 +25,6 @@ class AddEmployeeGUI:
 
         self.cap = None
         self.running = False
-
         self.window.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def start_camera(self):
@@ -33,8 +32,8 @@ class AddEmployeeGUI:
             return
 
         self.cap = cv2.VideoCapture(0)
-        self.cap.set(3, 680)
-        self.cap.set(4, 480)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 680)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
         if not self.cap.isOpened():
             messagebox.showerror("Camera Error", "Cannot access camera!")
@@ -84,5 +83,4 @@ class AddEmployeeGUI:
         self.running = False
         if self.cap and self.cap.isOpened():
             self.cap.release()
-
         self.window.destroy()
