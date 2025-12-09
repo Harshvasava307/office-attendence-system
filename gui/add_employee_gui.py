@@ -17,18 +17,15 @@ class AddEmployeeGUI:
         self.name_entry = tk.Entry(self.window, font=("Arial", 14))
         self.name_entry.pack(pady=5)
 
-        # Camera Frame
         self.camera_frame = tk.Label(self.window)
         self.camera_frame.pack(pady=10)
 
-        # Buttons
         tk.Button(self.window, text="Start Camera", width=20, command=self.start_camera).pack(pady=5)
         tk.Button(self.window, text="Capture Face", width=20, command=self.capture).pack(pady=5)
 
         self.cap = None
         self.running = False
 
-        # Handle window close
         self.window.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def start_camera(self):
@@ -36,8 +33,8 @@ class AddEmployeeGUI:
             return
 
         self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 680)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        self.cap.set(3, 680)
+        self.cap.set(4, 480)
 
         if not self.cap.isOpened():
             messagebox.showerror("Camera Error", "Cannot access camera!")
@@ -54,14 +51,12 @@ class AddEmployeeGUI:
         if not ret:
             return
 
-        # Convert BGR → RGB for Tkinter
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         img = ImageTk.PhotoImage(Image.fromarray(rgb))
 
         self.camera_frame.img = img
         self.camera_frame.configure(image=img)
 
-        # Repeat every 10ms
         self.window.after(10, self.show_frame)
 
     def capture(self):
@@ -89,4 +84,5 @@ class AddEmployeeGUI:
         self.running = False
         if self.cap and self.cap.isOpened():
             self.cap.release()
+
         self.window.destroy()
