@@ -6,24 +6,40 @@ import datetime
 from utils.face_recognition_module import recognize_employee
 from utils.attendance import mark_attendance
 
-class EmployeeAttendanceWindow:
-    def __init__(self, root):
-        self.root = root
-        self.window = tk.Toplevel(self.root)
-        self.window.title("Employee Attendance")
-        self.window.geometry("660x560")
-        self.window.resizable(False, False)
+class EmployeeAttendanceWindow(tk.Frame):
+    def __init__(self, parent, inline=False):
+        super().__init__(parent, bg="#2A2A3D")
+        self.inline = inline
+
+        if not inline:
+            self.window = tk.Toplevel(parent)
+            self.window.title("Employee Attendance")
+            self.window.geometry("660x560")
+            self.window.resizable(False, False)
+            self.container = self.window
+        else:
+            self.container = self
+            self.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+        # Header
+        header = tk.Label(self.container, text="Employee Attendance",
+                          font=("Helvetica", 18, "bold"),
+                          bg="#2A2A3D", fg="#FF7B02")
+        header.pack(pady=10)
 
         # VIDEO FRAME
-        self.video_frame = tk.Label(self.window)
-        self.video_frame.pack()
+        self.video_frame = tk.Label(self.container, bg="#1C1C2E")
+        self.video_frame.pack(pady=10)
 
         # BUTTON
         self.btn_login = tk.Button(
-            self.window,
+            self.container,
             text="Mark Attendance",
             font=("Arial", 14),
-            width=20,
+            width=25,
+            bg="#FF7B02",
+            fg="white",
+            activebackground="#FFA64D",
             command=self.save_attendance
         )
         self.btn_login.pack(pady=10)
@@ -35,18 +51,21 @@ class EmployeeAttendanceWindow:
 
         if not self.cap.isOpened():
             messagebox.showerror("Camera Error", "Cannot access camera.")
-            self.window.destroy()
+            if not inline:
+                self.window.destroy()
             return
 
         self.employee_name = "Unknown"
 
-        self.window.protocol("WM_DELETE_WINDOW", self.close_window)
+        if not inline:
+            self.window.protocol("WM_DELETE_WINDOW", self.close_window)
+
         self.update_frame()
 
     def update_frame(self):
         ret, frame = self.cap.read()
         if not ret:
-            self.window.after(10, self.update_frame)
+            self.container.after(10, self.update_frame)
             return
 
         # Recognize face
@@ -69,7 +88,7 @@ class EmployeeAttendanceWindow:
         self.video_frame.configure(image=tk_image)
         self.video_frame.image = tk_image
 
-        self.window.after(10, self.update_frame)
+        self.container.after(10, self.update_frame)
 
     def save_attendance(self):
         if self.employee_name == "Unknown":
@@ -83,4 +102,7 @@ class EmployeeAttendanceWindow:
     def close_window(self):
         if self.cap and self.cap.isOpened():
             self.cap.release()
-        self.window.destroy()
+        if not self.inline:
+            self.window.destroy()
+        else:
+            self.destroy()

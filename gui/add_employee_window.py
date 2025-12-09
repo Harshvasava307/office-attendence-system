@@ -4,29 +4,53 @@ import cv2
 from PIL import Image, ImageTk
 from core.employee_core import EmployeeCore
 
-class AddEmployeeGUI:
-    def __init__(self, parent):
+class AddEmployeeGUI(tk.Frame):
+    def __init__(self, parent, inline=False):
+        super().__init__(parent, bg="#2A2A3D")  # Modern dark frame background
         self.employee_core = EmployeeCore()
+        self.inline = inline
 
-        self.window = tk.Toplevel(parent)
-        self.window.title("Add Employee")
-        self.window.geometry("1280x720")
-        self.window.resizable(False, False)
+        if not inline:
+            # For backward compatibility, create a Toplevel window
+            self.window = tk.Toplevel(parent)
+            self.window.title("Add Employee")
+            self.window.geometry("1280x720")
+            self.window.resizable(False, False)
+            self.container = self.window
+        else:
+            # Inline mode: attach directly to parent frame
+            self.container = self
+            self.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
-        tk.Label(self.window, text="Enter Employee Name").pack(pady=10)
-        self.name_entry = tk.Entry(self.window, font=("Arial", 14))
+        # ---------- UI Elements ----------
+        header = tk.Label(self.container, text="Add Employee",
+                          font=("Helvetica", 18, "bold"),
+                          bg="#2A2A3D", fg="#FF7B02")
+        header.pack(pady=10)
+
+        tk.Label(self.container, text="Enter Employee Name:",
+                 font=("Arial", 14), bg="#2A2A3D", fg="white").pack(pady=5)
+        self.name_entry = tk.Entry(self.container, font=("Arial", 14), width=30)
         self.name_entry.pack(pady=5)
 
-        self.camera_frame = tk.Label(self.window)
+        # Camera Frame
+        self.camera_frame = tk.Label(self.container, bg="#1E1E2F")
         self.camera_frame.pack(pady=10)
 
-        tk.Button(self.window, text="Start Camera", width=20, command=self.start_camera).pack(pady=5)
-        tk.Button(self.window, text="Capture Face", width=20, command=self.capture).pack(pady=5)
+        # Buttons
+        btn_style = {"font": ("Arial", 14), "bg": "#FF7B02", "fg": "white",
+                     "activebackground": "#FF9E4B", "width": 20, "bd": 0, "pady": 10}
+        tk.Button(self.container, text="Start Camera", command=self.start_camera, **btn_style).pack(pady=5)
+        tk.Button(self.container, text="Capture Face", command=self.capture, **btn_style).pack(pady=5)
 
         self.cap = None
         self.running = False
-        self.window.protocol("WM_DELETE_WINDOW", self.on_close)
 
+        # Handle window close if Toplevel
+        if not inline:
+            self.window.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    # ---------- Camera Methods ----------
     def start_camera(self):
         if self.running:
             return
@@ -56,7 +80,7 @@ class AddEmployeeGUI:
         self.camera_frame.img = img
         self.camera_frame.configure(image=img)
 
-        self.window.after(10, self.show_frame)
+        self.container.after(10, self.show_frame)
 
     def capture(self):
         if not self.running:
@@ -83,4 +107,7 @@ class AddEmployeeGUI:
         self.running = False
         if self.cap and self.cap.isOpened():
             self.cap.release()
-        self.window.destroy()
+        if not self.inline:
+            self.window.destroy()
+        else:
+            self.destroy()
