@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<cascade>
+  <stageType>NN</stageType>
+  <featureType>HAAR</featureType>
+  <height>24</height>
+  <width>24</width>
+  <stageParams>...</stageParams>
+  <features>...</features>
+  <stages>...</stages>
+</cascade>
+</opencv_storage>

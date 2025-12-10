@@ -8,8 +8,6 @@ a = Analysis(
     datas=[
         ('gui/', 'gui'),
         ('assets/', 'assets'),
-        ('models/', 'models'),
-        ('encodings/', 'encodings'),
         ('haarcascade_frontalface_default.xml', '.'),
     ],
     hiddenimports=[
@@ -38,6 +36,6 @@ exe = EXE(
     debug=False,
     strip=False,
     upx=True,
-    console=False,  # hide console screen
-    icon='assets/app_icon.ico'  # if you have an icon
+    console=False,
+    icon='assets/app_icon.ico'
 )
