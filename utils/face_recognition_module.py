@@ -2,9 +2,18 @@ import cv2
 import os
 import numpy as np
 import face_recognition
+import sys
+
+# PyInstaller compatible path
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 # Folder where employee images are stored
-EMPLOYEE_IMAGES_DIR = "storage/employees/images"
+EMPLOYEE_IMAGES_DIR = resource_path("storage/employees/images")
 
 # Load known faces
 known_face_encodings = []
@@ -18,9 +27,12 @@ for file in os.listdir(EMPLOYEE_IMAGES_DIR):
         if len(encodings) > 0:
             known_face_encodings.append(encodings[0])
             known_face_names.append(os.path.splitext(file)[0])
+        else:
+            print(f"[WARNING] No face found in {file}")
 
+print(f"[INFO] Loaded {len(known_face_encodings)} employee(s)")
 
-def recognize_employee(frame):
+def recognize_employee(frame, tolerance=0.6):
     """
     Recognize employee from a webcam frame.
     Returns employee name or None.
@@ -29,7 +41,7 @@ def recognize_employee(frame):
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     # Detect faces
-    face_locations = face_recognition.face_locations(rgb_frame)
+    face_locations = face_recognition.face_locations(rgb_frame, model='hog')
     if len(face_locations) == 0:
         return None
 
@@ -38,17 +50,16 @@ def recognize_employee(frame):
     if len(encodings) == 0:
         return None
 
-    face_enc = encodings[0]
+    # Compare each face in frame
+    for face_enc in encodings:
+        matches = face_recognition.compare_faces(known_face_encodings, face_enc, tolerance=tolerance)
+        face_distances = face_recognition.face_distance(known_face_encodings, face_enc)
 
-    # Compare with known faces
-    matches = face_recognition.compare_faces(known_face_encodings, face_enc)
-    face_distances = face_recognition.face_distance(known_face_encodings, face_enc)
+        if len(face_distances) == 0:
+            continue
 
-    if len(face_distances) == 0:
-        return None
-
-    best_match_index = np.argmin(face_distances)
-    if matches[best_match_index]:
-        return known_face_names[best_match_index]
+        best_match_index = np.argmin(face_distances)
+        if matches[best_match_index]:
+            return known_face_names[best_match_index]
 
     return None

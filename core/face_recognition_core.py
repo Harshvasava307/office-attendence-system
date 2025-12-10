@@ -1,37 +1,59 @@
 import cv2
-import numpy as np
 import os
-from config.config import EMPLOYEE_ENCODINGS_DIR
+import numpy as np
+import face_recognition
+import sys
 
-class FaceRecognitionCore:
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and PyInstaller """
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
-    def encode_face(self, image):
-        """Return face encoding (dummy placeholder)."""
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        return gray.flatten()[:128]  # fake 128 dims
+# Folder where employee images are stored
+EMPLOYEE_IMAGES_DIR = resource_path("storage/employees/images")
 
-    def save_encoding(self, name, encoding):
-        path = os.path.join(EMPLOYEE_ENCODINGS_DIR, f"{name}.npy")
-        np.save(path, encoding)
+# Load known faces
+known_face_encodings = []
+known_face_names = []
 
-    def load_all_encodings(self):
-        encodings = {}
-        for file in os.listdir(EMPLOYEE_ENCODINGS_DIR):
-            if file.endswith(".npy"):
-                encodings[file.replace(".npy", "")] = np.load(
-                    os.path.join(EMPLOYEE_ENCODINGS_DIR, file)
-                )
-        return encodings
+if os.path.exists(EMPLOYEE_IMAGES_DIR):
+    for file in os.listdir(EMPLOYEE_IMAGES_DIR):
+        if file.endswith((".jpg", ".png")):
+            path = os.path.join(EMPLOYEE_IMAGES_DIR, file)
+            image = face_recognition.load_image_file(path)
+            encodings = face_recognition.face_encodings(image)
+            if len(encodings) > 0:
+                known_face_encodings.append(encodings[0])
+                known_face_names.append(os.path.splitext(file)[0])
 
-    def match_face(self, test_encoding, stored_encodings):
-        """Dummy matching logic."""
-        min_dist = float("inf")
-        matched_name = None
 
-        for name, encoding in stored_encodings.items():
-            dist = np.linalg.norm(test_encoding - encoding)
-            if dist < min_dist:
-                min_dist = dist
-                matched_name = name
+def recognize_employee(frame):
+    """
+    Recognize employee from a webcam frame.
+    Returns employee name or None.
+    """
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    face_locations = face_recognition.face_locations(rgb_frame)
+    if len(face_locations) == 0:
+        return None
 
-        return matched_name if min_dist < 5000 else None
+    encodings = face_recognition.face_encodings(rgb_frame, face_locations)
+    if len(encodings) == 0:
+        return None
+
+    face_enc = encodings[0]
+
+    matches = face_recognition.compare_faces(known_face_encodings, face_enc)
+    face_distances = face_recognition.face_distance(known_face_encodings, face_enc)
+
+    if len(face_distances) == 0:
+        return None
+
+    best_match_index = np.argmin(face_distances)
+    if matches[best_match_index]:
+        return known_face_names[best_match_index]
+
+    return None
