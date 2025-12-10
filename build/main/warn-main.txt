@@ -32,7 +32,7 @@ excluded module named _frozen_importlib - imported by importlib (optional), impo
 missing module named multiprocessing.get_context - imported by multiprocessing (top-level), multiprocessing.pool (top-level), multiprocessing.managers (top-level), multiprocessing.sharedctypes (top-level)
 missing module named multiprocessing.TimeoutError - imported by multiprocessing (top-level), multiprocessing.pool (top-level)
 missing module named _scproxy - imported by urllib.request (conditional)
-missing module named termios - imported by tty (top-level), getpass (optional)
+missing module named termios - imported by tty (top-level), getpass (optional), click._termui_impl (conditional)
 missing module named 'java.lang' - imported by platform (delayed, optional), xml.sax._exceptions (conditional)
 missing module named multiprocessing.BufferTooShort - imported by multiprocessing (top-level), multiprocessing.connection (top-level)
 missing module named multiprocessing.AuthenticationError - imported by multiprocessing (top-level), multiprocessing.connection (top-level)
