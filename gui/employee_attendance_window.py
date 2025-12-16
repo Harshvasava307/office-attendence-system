@@ -3,102 +3,157 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import datetime
+
 from utils.face_recognition_module import recognize_employee
 from utils.attendance import mark_attendance
+from gui.ui_theme import *
+
 
 class EmployeeAttendanceWindow(tk.Frame):
     def __init__(self, parent, inline=False):
-        super().__init__(parent, bg="#2A2A3D")
+        super().__init__(parent, bg=PRIMARY_BG)
         self.inline = inline
+        self.cap = None
+        self.employee_name = "Unknown"
 
+        # ---------- CONTAINER ----------
         if not inline:
             self.window = tk.Toplevel(parent)
-            self.window.title("Employee Attendance")
-            self.window.geometry("1400x900")
+            self.window.title("Astra Infotech – Employee Attendance")
+            self.window.geometry("1100x750")
+            self.window.configure(bg=PRIMARY_BG)
             self.window.resizable(False, False)
             self.container = self.window
         else:
             self.container = self
-            self.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+            self.pack(fill=tk.BOTH, expand=True, padx=30, pady=30)
 
-        # Header
-        header = tk.Label(self.container, text="Employee Attendance",
-                          font=("Helvetica", 18, "bold"),
-                          bg="#2A2A3D", fg="#FF7B02")
-        header.pack(pady=10)
+        # ---------- HEADER ----------
+        header = tk.Frame(self.container, bg=PRIMARY_BG)
+        header.pack(fill=tk.X, pady=(0, 15))
 
-        # VIDEO FRAME
-        self.video_frame = tk.Label(self.container, bg="#1C1C2E")
-        self.video_frame.pack(pady=10)
+        tk.Label(
+            header,
+            text="Employee Attendance",
+            font=FONT_TITLE,
+            bg=PRIMARY_BG,
+            fg=TEXT_PRIMARY
+        ).pack(anchor="w")
 
-        # BUTTON
-        self.btn_login = tk.Button(
+        tk.Label(
+            header,
+            text="Astra Infotech",
+            font=FONT_SUBTITLE,
+            bg=PRIMARY_BG,
+            fg=TEXT_MUTED
+        ).pack(anchor="w")
+
+        # ---------- CAMERA CARD ----------
+        card = tk.Frame(
             self.container,
-            text="Mark Attendance",
-            font=("Arial", 14),
-            width=25,
-            bg="#FF7B02",
-            fg="white",
-            activebackground="#FFA64D",
-            command=self.save_attendance
+            bg=CARD_BG,
+            highlightbackground=BORDER,
+            highlightthickness=1
         )
-        self.btn_login.pack(pady=10)
+        card.pack(fill=tk.BOTH, expand=True)
 
-        # CAMERA
+        self.video_label = tk.Label(card, bg="black")
+        self.video_label.pack(pady=15)
+
+        self.info_label = tk.Label(
+            card,
+            text="Detecting face...",
+            font=FONT_BODY,
+            bg=CARD_BG,
+            fg=TEXT_MUTED
+        )
+        self.info_label.pack(pady=5)
+
+        tk.Button(
+            card,
+            text="Mark Attendance",
+            font=FONT_BUTTON,
+            bg=ACCENT,
+            fg="white",
+            activebackground=ACCENT_HOVER,
+            width=25,
+            bd=0,
+            pady=12,
+            command=self.save_attendance
+        ).pack(pady=15)
+
+        # ---------- CAMERA ----------
         self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-        self.cap.set(3, 640)
-        self.cap.set(4, 480)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
         if not self.cap.isOpened():
             messagebox.showerror("Camera Error", "Cannot access camera.")
-            if not inline:
-                self.window.destroy()
+            self.close_window()
             return
-
-        self.employee_name = "Unknown"
 
         if not inline:
             self.window.protocol("WM_DELETE_WINDOW", self.close_window)
 
         self.update_frame()
 
+    # ---------- CAMERA LOOP ----------
     def update_frame(self):
-        ret, frame = self.cap.read()
-        if not ret:
-            self.container.after(10, self.update_frame)
+        if not self.cap or not self.cap.isOpened():
             return
 
-        # Recognize face
+        ret, frame = self.cap.read()
+        if not ret:
+            self.container.after(15, self.update_frame)
+            return
+
         name = recognize_employee(frame)
-        if name is not None:
+
+        if name:
             self.employee_name = name
+            self.info_label.config(
+                text=f"Face detected: {name}",
+                fg=SUCCESS
+            )
+        else:
+            self.employee_name = "Unknown"
+            self.info_label.config(
+                text="Detecting face...",
+                fg=TEXT_MUTED
+            )
 
-        # Overlay text
         now = datetime.datetime.now()
-        cv2.putText(frame, f"Name: {self.employee_name}", (10, 25),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-        cv2.putText(frame, f"Date: {now.strftime('%d-%m-%Y')}", (10, 55),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
-        cv2.putText(frame, f"Time: {now.strftime('%H:%M:%S')}", (10, 85),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 255), 2)
+        cv2.putText(
+            frame,
+            now.strftime("%d-%m-%Y  %H:%M:%S"),
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (106, 100, 218),
+            2
+        )
 
-        # Convert to Tkinter
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        tk_image = ImageTk.PhotoImage(Image.fromarray(rgb))
-        self.video_frame.configure(image=tk_image)
-        self.video_frame.image = tk_image
+        img = ImageTk.PhotoImage(Image.fromarray(rgb))
+        self.video_label.configure(image=img)
+        self.video_label.image = img
 
-        self.container.after(10, self.update_frame)
+        self.container.after(15, self.update_frame)
 
+    # ---------- SAVE ----------
     def save_attendance(self):
         if self.employee_name == "Unknown":
             messagebox.showerror("Error", "Face not recognized!")
             return
 
         mark_attendance(self.employee_name)
-        messagebox.showinfo("Success", f"Attendance marked for {self.employee_name}")
+        messagebox.showinfo(
+            "Success",
+            f"Attendance marked for {self.employee_name}"
+        )
         self.close_window()
 
+    # ---------- CLOSE ----------
     def close_window(self):
         if self.cap and self.cap.isOpened():
             self.cap.release()

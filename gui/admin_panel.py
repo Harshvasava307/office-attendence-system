@@ -1,48 +1,32 @@
 import tkinter as tk
+from gui.add_employee_window import AddEmployeeGUI
+from gui.attendance_sheet_gui import AttendanceSheetGUI
+from gui.ui_theme import *
 
 
 class AdminPanel(tk.Frame):
-    def __init__(self, parent, switch_screen, go_home):
-        super().__init__(parent, bg="#2A2A3D")
-        self.switch_screen = switch_screen
-        self.go_home = go_home
-
+    def __init__(self, parent):
+        super().__init__(parent, bg=PRIMARY_BG)
         self.pack(fill=tk.BOTH, expand=True)
 
-        tk.Label(
-            self,
-            text="Admin Panel",
-            font=("Helvetica", 20, "bold"),
-            bg="#2A2A3D",
-            fg="#FF7B02"
-        ).pack(pady=20)
+        tk.Label(self, text="Admin Panel",
+                 font=FONT_TITLE, bg=PRIMARY_BG).pack(pady=20)
 
-        btn_style = {
-            "font": ("Arial", 14),
-            "bg": "#FF7B02",
-            "fg": "white",
-            "bd": 0,
-            "width": 25,
-            "pady": 10
-        }
+        self.btn("Attendance Sheet", self.open_sheet)
+        self.btn("Add Employee", lambda: AddEmployeeGUI(parent))
 
+    def btn(self, text, cmd):
         tk.Button(
             self,
-            text="Add Employee",
-            command=lambda: self.switch_screen("add_employee"),
-            **btn_style
+            text=text,
+            command=cmd,
+            font=FONT_BUTTON,
+            bg=SECONDARY,
+            fg="white",
+            bd=0,
+            pady=12,
+            width=25
         ).pack(pady=10)
 
-        tk.Button(
-            self,
-            text="Attendance Sheet",
-            command=lambda: self.switch_screen("attendance_sheet"),
-            **btn_style
-        ).pack(pady=10)
-
-        tk.Button(
-            self,
-            text="← Logout",
-            command=self.go_home,
-            **btn_style
-        ).pack(pady=30)
+    def open_sheet(self):
+        AttendanceSheetGUI(self)
