@@ -9,7 +9,7 @@ class MainWindow:
     def __init__(self, root):
         self.root = root
         self.root.title("Office Attendance System")
-        self.root.geometry("900x600")
+        self.root.geometry("1400x900")
         self.root.configure(bg="#1E1E2F")
 
         self.container = tk.Frame(self.root, bg="#1E1E2F")
@@ -17,17 +17,22 @@ class MainWindow:
 
         self.show_home()
 
-    # ---------- SCREEN HANDLER ----------
+    # ---------- CORE SCREEN ENGINE ----------
     def clear_screen(self):
         for widget in self.container.winfo_children():
             widget.destroy()
 
-    def switch_screen(self, screen_class):
+    def switch_screen(self, screen_name):
         self.clear_screen()
-        screen_class(self.container, inline=True)
 
-    def go_home(self):
-        self.show_home()
+        if screen_name == "add_employee":
+            AddEmployeeGUI(self.container)
+
+        elif screen_name == "attendance":
+            EmployeeAttendanceWindow(self.root)
+
+        elif screen_name == "admin_panel":
+            AdminPanel(self.container, self.switch_screen, self.show_home)
 
     # ---------- HOME ----------
     def show_home(self):
@@ -53,14 +58,14 @@ class MainWindow:
         tk.Button(
             self.container,
             text="Add Employee",
-            command=lambda: self.switch_screen(AddEmployeeGUI),
+            command=lambda: self.switch_screen("add_employee"),
             **btn_style
         ).pack(pady=10)
 
         tk.Button(
             self.container,
             text="Mark Attendance",
-            command=lambda: EmployeeAttendanceWindow(self.root),
+            command=lambda: self.switch_screen("attendance"),
             **btn_style
         ).pack(pady=10)
 
@@ -71,11 +76,11 @@ class MainWindow:
             **btn_style
         ).pack(pady=10)
 
-    # ---------- ADMIN ----------
+    # ---------- ADMIN LOGIN ----------
     def open_admin_login(self):
         self.clear_screen()
         AdminLogin(
             self.container,
-            self.switch_screen,
-            self.go_home
+            on_success=lambda: self.switch_screen("admin_panel"),
+            on_back=self.show_home
         )

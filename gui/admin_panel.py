@@ -1,12 +1,11 @@
 import tkinter as tk
-from gui.add_employee_window import AddEmployeeGUI
-from gui.remove_employee_gui import RemoveEmployeeGUI
-from gui.attendance_sheet_gui import AttendanceSheetGUI
 
 
 class AdminPanel(tk.Frame):
-    def __init__(self, parent, inline=False):
+    def __init__(self, parent, switch_screen, go_home):
         super().__init__(parent, bg="#2A2A3D")
+        self.switch_screen = switch_screen
+        self.go_home = go_home
 
         self.pack(fill=tk.BOTH, expand=True)
 
@@ -29,21 +28,21 @@ class AdminPanel(tk.Frame):
 
         tk.Button(
             self,
-            text="Attendance Sheet",
-            command=lambda: AttendanceSheetGUI(self),
-            **btn_style
-        ).pack(pady=10)
-
-        tk.Button(
-            self,
             text="Add Employee",
-            command=lambda: AddEmployeeGUI(self, inline=True),
+            command=lambda: self.switch_screen("add_employee"),
             **btn_style
         ).pack(pady=10)
 
         tk.Button(
             self,
-            text="Remove Employee",
-            command=lambda: RemoveEmployeeGUI(self),
+            text="Attendance Sheet",
+            command=lambda: self.switch_screen("attendance_sheet"),
             **btn_style
         ).pack(pady=10)
+
+        tk.Button(
+            self,
+            text="← Logout",
+            command=self.go_home,
+            **btn_style
+        ).pack(pady=30)
