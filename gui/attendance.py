@@ -2,7 +2,8 @@ import csv
 import os
 import datetime
 
-ATTENDANCE_FILE = "C:\\Harsh\\office-attendence-system\\data\\attendance.csv"
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+ATTENDANCE_FILE = os.path.join(BASE_DIR, "data", "attendance.csv")
 
 def mark_attendance(name):
     now = datetime.datetime.now()
@@ -11,10 +12,22 @@ def mark_attendance(name):
 
     file_exists = os.path.isfile(ATTENDANCE_FILE)
 
-    with open(ATTENDANCE_FILE, "a", newline='') as f:
+    with open(ATTENDANCE_FILE, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
 
         if not file_exists:
-            writer.writerow(["Name", "Date", "Time"])
+            writer.writerow([
+                "EmployeeName",
+                "Date",
+                "CheckIn",
+                "CheckOut",
+                "Status"
+            ])
 
-        writer.writerow([name, date, time])
+        writer.writerow([
+            name,
+            date,
+            time,
+            "",
+            "Present"
+        ])
