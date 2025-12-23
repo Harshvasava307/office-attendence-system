@@ -52,6 +52,16 @@ class MainWindow:
         self.action_button("Mark Attendance", lambda: EmployeeAttendanceWindow(self.root))
         self.action_button("Admin Panel", self.open_admin)
 
+        # ---------- COPYRIGHT ----------
+        tk.Label(
+            self.container,
+            text="© 2025 Astra Infotech. All rights reserved.",
+            font=("Inter", 9),
+            bg=PRIMARY_BG,
+            fg=TEXT_MUTED
+        ).pack(side=tk.BOTTOM, pady=10)
+
+
     def action_button(self, text, command):
         tk.Button(
             self.container,
