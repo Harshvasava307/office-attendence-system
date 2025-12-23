@@ -1,23 +1,23 @@
 # =========================================
-# Astra Infotech – Global UI Theme
+# Astra Infotech – Dark UI Theme
 # =========================================
 
 # ---------- BRAND COLORS ----------
-PRIMARY_BG = "#FFFFFF"          # Main window background
+PRIMARY_BG = "#0F172A"          # Deep slate (main background)
 SECONDARY = "#6A64DA"           # Brand purple
 ACCENT = "#6A64DA"
 ACCENT_HOVER = "#5A54C8"
 
-CARD_BG = "#F3F4F6"
-BORDER = "#E5E7EB"
+CARD_BG = "#111827"             # Dark card background
+BORDER = "#1F2937"
 
 # ---------- TEXT COLORS ----------
-TEXT_PRIMARY = "#1F2937"
-TEXT_MUTED = "#6B7280"
-TEXT_LIGHT = "#9CA3AF"
+TEXT_PRIMARY = "#F9FAFB"        # Almost white
+TEXT_MUTED = "#9CA3AF"          # Muted gray
+TEXT_LIGHT = "#6B7280"
 
-SUCCESS = "#16A34A"
-ERROR = "#DC2626"
+SUCCESS = "#22C55E"
+ERROR = "#EF4444"
 
 # ---------- FONTS ----------
 FONT_TITLE = ("Segoe UI", 22, "bold")
