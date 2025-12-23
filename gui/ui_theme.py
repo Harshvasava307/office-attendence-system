@@ -13,6 +13,7 @@ BORDER = "#1F2937"
 
 # ---------- TEXT COLORS ----------
 TEXT_PRIMARY = "#F9FAFB"        # Almost white
+TEXT_SECONDARY = "#F9FAFB"
 TEXT_MUTED = "#9CA3AF"          # Muted gray
 TEXT_LIGHT = "#6B7280"
 

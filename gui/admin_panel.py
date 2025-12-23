@@ -25,7 +25,7 @@ class AdminPanel(tk.Frame):
         # ===============================
         # BUTTONS
         # ===============================
-        self._create_button("Attendance Sheet", self.open_attendance_dashboard)
+        self._create_button("Attendance Manager", self.open_attendance_dashboard)
         self._create_button("Add Employee", self.open_add_employee)
 
     # ===============================
