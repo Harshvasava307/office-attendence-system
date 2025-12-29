@@ -3,18 +3,18 @@
 # =========================================
 
 # ---------- BRAND COLORS ----------
-PRIMARY_BG = "#0F172A"          # Deep slate (main background)
-SECONDARY = "#6A64DA"           # Brand purple
+PRIMARY_BG = "#0F172A"
+SECONDARY = "#6A64DA"
 ACCENT = "#6A64DA"
 ACCENT_HOVER = "#5A54C8"
 
-CARD_BG = "#111827"             # Dark card background
+CARD_BG = "#111827"
 BORDER = "#1F2937"
 
 # ---------- TEXT COLORS ----------
-TEXT_PRIMARY = "#F9FAFB"        # Almost white
+TEXT_PRIMARY = "#F9FAFB"
 TEXT_SECONDARY = "#F9FAFB"
-TEXT_MUTED = "#9CA3AF"          # Muted gray
+TEXT_MUTED = "#9CA3AF"
 TEXT_LIGHT = "#6B7280"
 
 SUCCESS = "#22C55E"
