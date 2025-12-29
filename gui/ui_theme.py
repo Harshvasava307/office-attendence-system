@@ -28,4 +28,4 @@ FONT_SMALL = ("Segoe UI", 11)
 FONT_BUTTON = ("Segoe UI", 14, "bold")
 FONT_NORMAL = ("Segoe UI", 14)
 
-Hello world
+print("Hello World")
