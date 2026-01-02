@@ -130,6 +130,12 @@ Password: admin123
 ## 📸 Screenshots
 
 > *(Add screenshots here once UI is finalized)*
+> <img width="1920" height="1039" alt="image" src="https://github.com/user-attachments/assets/c4bb5191-51fc-4a81-b275-21473943395a" />
+<img width="1920" height="1035" alt="image" src="https://github.com/user-attachments/assets/4947a767-973a-4196-95e5-85734ebd30e5" />
+<img width="1920" height="1036" alt="image" src="https://github.com/user-attachments/assets/a2882bbd-1549-4e95-a614-95a35c5dc28c" />
+<img width="1920" height="1041" alt="image" src="https://github.com/user-attachments/assets/8dca8401-5fbb-40f5-8946-91ff4137647e" />
+<img width="1201" height="732" alt="image" src="https://github.com/user-attachments/assets/ee37fd3b-0308-4a60-b1f7-d28f9100cc0d" />
+
 
 ---
 
