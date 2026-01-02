@@ -86,7 +86,7 @@ cd office-attendance-system
 ### 2️⃣ Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+python setup.py
 ```
 
 ### 3️⃣ Run the Application
