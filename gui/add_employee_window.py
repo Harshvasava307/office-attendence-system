@@ -115,8 +115,13 @@ class AddEmployeeGUI:
             return
 
         ret, frame = self.cap.read()
+        if not ret:
+            messagebox.showerror("Error", "Camera frame not available")
+            return
+
         if self.employee_core.add_employee(name, frame):
             messagebox.showinfo("Success", "Employee added successfully")
+            self.close()  # ✅ CLOSE WINDOW AFTER SUCCESS
         else:
             messagebox.showerror("Error", "Face capture failed")
 
