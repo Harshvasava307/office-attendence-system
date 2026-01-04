@@ -5,7 +5,11 @@ from PIL import Image, ImageTk
 import datetime
 
 from utils.face_recognition_module import recognize_employee
-from utils.attendance import mark_attendance
+from utils.attendance import (
+    mark_check_in,
+    mark_check_out,
+    get_today_record
+)
 from gui.ui_theme import *
 
 
@@ -69,18 +73,44 @@ class EmployeeAttendanceWindow(tk.Frame):
         )
         self.info_label.pack(pady=5)
 
-        tk.Button(
+        self.checkin_info = tk.Label(
             card,
-            text="Mark Attendance",
+            text="",
+            font=FONT_BODY,
+            bg=CARD_BG,
+            fg=SUCCESS
+        )
+        self.checkin_info.pack(pady=5)
+
+        # ---------- BUTTON ROW ----------
+        btn_frame = tk.Frame(card, bg=CARD_BG)
+        btn_frame.pack(pady=15)
+
+        self.btn_checkin = tk.Button(
+            btn_frame,
+            text="Check In",
             font=FONT_BUTTON,
             bg=ACCENT,
             fg="white",
             activebackground=ACCENT_HOVER,
-            width=25,
-            bd=0,
+            width=18,
             pady=12,
-            command=self.save_attendance
-        ).pack(pady=15)
+            bd=0,
+            command=self.check_in
+        )
+        self.btn_checkin.pack(side=tk.LEFT, padx=10)
+
+        self.btn_checkout = tk.Button(
+            btn_frame,
+            text="Check Out",
+            font=FONT_BUTTON,
+            fg="white",
+            width=18,
+            pady=12,
+            bd=0,
+            command=self.check_out
+        )
+        self.btn_checkout.pack(side=tk.LEFT, padx=10)
 
         # ---------- CAMERA ----------
         self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -115,6 +145,7 @@ class EmployeeAttendanceWindow(tk.Frame):
                 text=f"Face detected: {name}",
                 fg=SUCCESS
             )
+            self.update_ui_state()
         else:
             self.employee_name = "Unknown"
             self.info_label.config(
@@ -140,18 +171,39 @@ class EmployeeAttendanceWindow(tk.Frame):
 
         self.container.after(15, self.update_frame)
 
-    # ---------- SAVE ----------
-    def save_attendance(self):
-        if self.employee_name == "Unknown":
-            messagebox.showerror("Error", "Face not recognized!")
-            return
+    # ---------- UI STATE ----------
+    def update_ui_state(self):
+        record = get_today_record(self.employee_name)
 
-        mark_attendance(self.employee_name)
-        messagebox.showinfo(
-            "Success",
-            f"Attendance marked for {self.employee_name}"
-        )
-        self.close_window()
+        if not record:
+            self.checkin_info.config(text="")
+            self.btn_checkin.config(state=tk.NORMAL)
+            self.btn_checkout.config(state=tk.DISABLED)
+        else:
+            self.checkin_info.config(
+                text=f"Checked in at {record['CheckIn']}"
+            )
+            self.btn_checkin.config(state=tk.DISABLED)
+            self.btn_checkout.config(
+                state=tk.NORMAL if not record["CheckOut"] else tk.DISABLED
+            )
+
+    # ---------- ACTIONS ----------
+    def check_in(self):
+        success, msg = mark_check_in(self.employee_name)
+        if success:
+            messagebox.showinfo("Success", f"Checked in at {msg}")
+            self.update_ui_state()
+        else:
+            messagebox.showwarning("Info", msg)
+
+    def check_out(self):
+        success, msg = mark_check_out(self.employee_name)
+        if success:
+            messagebox.showinfo("Success", f"Checked out at {msg}")
+            self.update_ui_state()
+        else:
+            messagebox.showwarning("Info", msg)
 
     # ---------- CLOSE ----------
     def close_window(self):
