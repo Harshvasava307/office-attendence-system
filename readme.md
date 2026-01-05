@@ -159,7 +159,7 @@ This project is licensed under the **MIT License**.
 ## 👤 Author
 
 **Harsh**
-MCA Student | Web Developer | Data Analytics Aspirant
+MCA Student | Web Developer | Data Analytics 
 
 ---
 
