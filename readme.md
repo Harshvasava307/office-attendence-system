@@ -136,7 +136,9 @@ Password: admin123
 <img width="1920" height="1041" alt="image" src="https://github.com/user-attachments/assets/8dca8401-5fbb-40f5-8946-91ff4137647e" />
 <img width="1201" height="732" alt="image" src="https://github.com/user-attachments/assets/ee37fd3b-0308-4a60-b1f7-d28f9100cc0d" />
 
-
+## Demo Video
+🎥 Watch here:  
+https://github.com/Harshvasava307/office-attendence-system/must_watch.mp4
 ---
 
 ## 🤝 Contribution
