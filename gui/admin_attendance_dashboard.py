@@ -5,6 +5,8 @@ import datetime
 import os
 import sys
 import subprocess
+import csv
+import shutil
 
 from gui.ui_theme import *
 from gui.attendance_service import (
@@ -15,6 +17,9 @@ from gui.attendance_service import (
 from gui.employee_list_panel import EmployeeListPanel
 
 
+DATASET_DIR = "dataset"
+
+
 class AdminAttendanceDashboard(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -22,7 +27,7 @@ class AdminAttendanceDashboard(tk.Toplevel):
         self.geometry("1200x700")
         self.configure(bg=PRIMARY_BG)
 
-        self.selected_employee = None  # Show all by default
+        self.selected_employee = None
 
         self._create_top_cards()
         self._create_main_layout()
@@ -42,21 +47,11 @@ class AdminAttendanceDashboard(tk.Toplevel):
         card.pack(side=tk.LEFT, padx=15)
         card.pack_propagate(False)
 
-        tk.Label(
-            card,
-            text=title,
-            bg=CARD_BG,
-            fg=TEXT_SECONDARY,
-            font=("Segoe UI", 11)
-        ).pack(anchor="w", padx=15, pady=(15, 0))
+        tk.Label(card, text=title, bg=CARD_BG,
+                 fg=TEXT_SECONDARY, font=("Segoe UI", 11)).pack(anchor="w", padx=15, pady=(15, 0))
 
-        value_lbl = tk.Label(
-            card,
-            text=value,
-            bg=CARD_BG,
-            fg=TEXT_PRIMARY,
-            font=("Segoe UI", 22, "bold")
-        )
+        value_lbl = tk.Label(card, text=value, bg=CARD_BG,
+                             fg=TEXT_PRIMARY, font=("Segoe UI", 22, "bold"))
         value_lbl.pack(anchor="w", padx=15, pady=(5, 10))
 
         return value_lbl
@@ -66,29 +61,22 @@ class AdminAttendanceDashboard(tk.Toplevel):
         body = tk.Frame(self, bg=PRIMARY_BG)
         body.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 
-        # Left Panel - Employee List
         self.left_panel = EmployeeListPanel(body, self.on_employee_select)
         self.left_panel.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 10))
 
-        # Right Panel
         self.right_panel = tk.Frame(body, bg=CARD_BG, bd=1, relief="ridge")
         self.right_panel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
         self._right_panel_content()
 
-    # -------------------- Right Panel Content --------------------
+    # -------------------- Right Panel --------------------
     def _right_panel_content(self):
-        # Header
         top_frame = tk.Frame(self.right_panel, bg=CARD_BG)
         top_frame.pack(fill=tk.X, padx=10, pady=10)
 
-        tk.Label(
-            top_frame,
-            text="Attendance Dashboard",
-            bg=CARD_BG,
-            fg=TEXT_PRIMARY,
-            font=("Segoe UI", 14, "bold")
-        ).pack(side=tk.LEFT)
+        tk.Label(top_frame, text="Attendance Dashboard",
+                 bg=CARD_BG, fg=TEXT_PRIMARY,
+                 font=("Segoe UI", 14, "bold")).pack(side=tk.LEFT)
 
         tk.Button(
             top_frame,
@@ -96,18 +84,26 @@ class AdminAttendanceDashboard(tk.Toplevel):
             command=self.open_attendance_file,
             bg=ACCENT,
             fg="white",
-            activebackground=ACCENT_HOVER,
             font=("Segoe UI", 10, "bold"),
-            cursor="hand2",
             padx=12,
             pady=4
         ).pack(side=tk.RIGHT)
 
-        # Body
+        # 🗑️ DELETE BUTTON
+        tk.Button(
+            top_frame,
+            text="Delete Employee",
+            command=self.delete_selected_employee,
+            bg="#E53935",
+            fg="white",
+            font=("Segoe UI", 10, "bold"),
+            padx=12,
+            pady=4
+        ).pack(side=tk.RIGHT, padx=10)
+
         rp_body = tk.Frame(self.right_panel, bg=CARD_BG)
         rp_body.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 
-        # Calendar
         cal_frame = tk.Frame(rp_body, bg=CARD_BG)
         cal_frame.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 10))
 
@@ -115,7 +111,6 @@ class AdminAttendanceDashboard(tk.Toplevel):
         self.calendar.pack()
         self.calendar.bind("<<CalendarSelected>>", self.load_attendance)
 
-        # Attendance Table
         table_frame = tk.Frame(rp_body, bg=CARD_BG)
         table_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
@@ -133,16 +128,14 @@ class AdminAttendanceDashboard(tk.Toplevel):
 
         self.att_table.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        # Load initial attendance
         self.load_attendance()
 
     # -------------------- Load Attendance --------------------
     def load_attendance(self, event=None):
-        date_str = self.calendar.get_date()  # mm/dd/yy
+        date_str = self.calendar.get_date()
         dt = datetime.datetime.strptime(date_str, "%m/%d/%y")
         formatted_date = dt.strftime("%d-%m-%Y")
 
-        # Clear table
         for row in self.att_table.get_children():
             self.att_table.delete(row)
 
@@ -171,32 +164,67 @@ class AdminAttendanceDashboard(tk.Toplevel):
             else:
                 total_absent += 1
 
-        # Update summary cards
         self.total_emp_card.config(text=str(len(employees)))
         self.present_card.config(text=str(total_present))
         self.absent_card.config(text=str(total_absent))
         self.half_day_card.config(text=str(total_half))
 
-    # -------------------- Open Attendance CSV --------------------
-    def open_attendance_file(self):
-        file_path = ATTENDANCE_FILE
+    # -------------------- DELETE EMPLOYEE --------------------
+    def delete_selected_employee(self):
+        if not self.selected_employee:
+            messagebox.showwarning("Warning", "Select an employee first")
+            return
 
-        if not os.path.exists(file_path):
-            messagebox.showerror(
-                "File Not Found",
-                "Attendance file not found.\nNo attendance recorded yet."
-            )
+        confirm = messagebox.askyesno(
+            "Confirm Delete",
+            f"Are you sure you want to delete {self.selected_employee}?"
+        )
+        if not confirm:
+            return
+
+        # Remove attendance records
+        if os.path.exists(ATTENDANCE_FILE):
+            rows = []
+            with open(ATTENDANCE_FILE, newline="", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if row["EmployeeName"] != self.selected_employee:
+                        rows.append(row)
+
+            with open(ATTENDANCE_FILE, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(
+                    f,
+                    fieldnames=["EmployeeName", "Date", "CheckIn", "CheckOut", "Status"]
+                )
+                writer.writeheader()
+                writer.writerows(rows)
+
+        # Remove dataset folder
+        emp_path = os.path.join(DATASET_DIR, self.selected_employee)
+        if os.path.exists(emp_path):
+            shutil.rmtree(emp_path)
+
+        messagebox.showinfo("Success", "Employee deleted successfully")
+
+        self.selected_employee = None
+        self.left_panel.refresh_list()
+        self.load_attendance()
+
+    # -------------------- Open CSV --------------------
+    def open_attendance_file(self):
+        if not os.path.exists(ATTENDANCE_FILE):
+            messagebox.showerror("File Not Found", "No attendance file found.")
             return
 
         try:
             if sys.platform.startswith("win"):
-                os.startfile(file_path)
+                os.startfile(ATTENDANCE_FILE)
             elif sys.platform == "darwin":
-                subprocess.call(["open", file_path])
+                subprocess.call(["open", ATTENDANCE_FILE])
             else:
-                subprocess.call(["xdg-open", file_path])
+                subprocess.call(["xdg-open", ATTENDANCE_FILE])
         except Exception as e:
-            messagebox.showerror("Error", f"Unable to open file:\n{e}")
+            messagebox.showerror("Error", str(e))
 
     # -------------------- Employee Selection --------------------
     def on_employee_select(self, name):
