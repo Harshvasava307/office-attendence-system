@@ -44,3 +44,27 @@ tkinter available
 === All dependencies processed ===
 
 Launching main.py...
+=== Setup Environment Started ===
+
+dlib not found.
+Installing dlib-19.24.6-cp310-cp310-win_amd64.whl...
+dlib-19.24.6-cp310-cp310-win_amd64.whl installed successfully.
+face_recognition_models already installed.
+numpy not found.
+Installing numpy...
+numpy installed successfully.
+cv2 not found.
+Installing opencv-python...
+opencv-python installed successfully.
+face_recognition not found.
+Installing face_recognition...
+face_recognition installed successfully.
+PIL already installed.
+tkcalendar not found.
+Installing tkcalendar...
+tkcalendar installed successfully.
+tkinter available
+
+=== All dependencies processed ===
+
+Launching main.py...
