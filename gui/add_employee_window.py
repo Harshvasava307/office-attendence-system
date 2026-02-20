@@ -120,8 +120,14 @@ class AddEmployeeGUI:
             return
 
         if self.employee_core.add_employee(name, frame):
+
+            # 🔥 IMPORTANT: Reload face recognition data immediately
+            from utils.face_recognition_module import load_known_faces
+            load_known_faces()
+
             messagebox.showinfo("Success", "Employee added successfully")
-            self.close()  # ✅ CLOSE WINDOW AFTER SUCCESS
+            self.close()
+
         else:
             messagebox.showerror("Error", "Face capture failed")
 
