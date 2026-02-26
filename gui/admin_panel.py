@@ -49,13 +49,7 @@ class AdminPanel(tk.Frame):
     # ACTIONS
     # ===============================
     def open_attendance_dashboard(self):
-        """
-        Opens the new Admin Attendance Dashboard
-        """
         AdminAttendanceDashboard(self.parent)
 
     def open_add_employee(self):
-        """
-        Opens Add Employee Window
-        """
         AddEmployeeGUI(self.parent)
