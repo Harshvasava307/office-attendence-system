@@ -30,3 +30,13 @@ Pillow installed successfully.
 
 === All dependencies processed ===
 Launching main.py...
+=== Setup Environment Started ===
+
+numpy already installed.
+cv2 already installed.
+face_recognition already installed.
+dlib already installed.
+PIL already installed.
+
+=== All dependencies processed ===
+Launching main.py...
