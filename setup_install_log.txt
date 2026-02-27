@@ -60,3 +60,10 @@ Pillow installed successfully.
 
 === All dependencies processed ===
 Launching main.py...
+=== Setup Environment Started ===
+
+numpy already installed.
+cv2 already installed.
+face_recognition not found.
+Installing face_recognition...
+Failed to install face_recognition: Command '['C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python314\\python.exe', '-m', 'pip', 'install', 'face_recognition']' returned non-zero exit status 3221225786.
