@@ -32,11 +32,31 @@ Pillow installed successfully.
 Launching main.py...
 === Setup Environment Started ===
 
+<<<<<<< Updated upstream
 numpy already installed.
 cv2 already installed.
 face_recognition already installed.
 dlib already installed.
 PIL already installed.
+=======
+numpy not found.
+Installing numpy...
+numpy installed successfully.
+cv2 not found.
+Installing opencv-python...
+opencv-python installed successfully.
+face_recognition not found.
+Installing face_recognition...
+Failed to install face_recognition: Command '['C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python314\\python.exe', '-m', 'pip', 'install', 'face_recognition']' returned non-zero exit status 1.
+ERROR: Could not install face_recognition. Please install manually.
+dlib not found.
+Installing dlib...
+Failed to install dlib: Command '['C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python314\\python.exe', '-m', 'pip', 'install', 'dlib']' returned non-zero exit status 1.
+ERROR: Could not install dlib. Please install manually.
+PIL not found.
+Installing Pillow...
+Pillow installed successfully.
+>>>>>>> Stashed changes
 
 === All dependencies processed ===
 Launching main.py...
